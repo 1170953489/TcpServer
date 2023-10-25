@@ -20,7 +20,8 @@ public:
     QString getChatName();
     void updateMsg(const PDU *pdu);
 
-
+protected:
+    bool eventFilter(QObject* obj, QEvent* event) override;
 private slots:
     void on_sendMsg_pb_clicked();
 

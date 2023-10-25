@@ -28,6 +28,7 @@ void FileThread::init()
 
     connect(this, &FileThread::sendMsg, pFileTransfer, &FileTransfer::sendMsg);
     connect(pFileTransfer, &FileTransfer::upDownloadProgress, this, &FileThread::resendProgress);
+
     connect(pFileTransfer, &FileTransfer::workFinished, this, &FileThread::finish);
 }
 

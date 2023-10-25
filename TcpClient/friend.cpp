@@ -23,7 +23,7 @@ Friend::Friend(QWidget *parent) :
 
     ui->m_pMsgSendPB->setEnabled(false);
     ui->m_pMsgSendPB->setStyleSheet("QPushButton{ color: rgba(255, 255, 255, 130); border-radius: 10px; background-color: rgba(0, 153, 255,0.5);}");
-    QObject::connect(ui->m_pInputMsgTE, &QTextEdit::textChanged, [=]() {
+    connect(ui->m_pInputMsgTE, &QTextEdit::textChanged, [=]() {
         if (ui->m_pInputMsgTE->toPlainText().isEmpty()) {
             ui->m_pMsgSendPB->setEnabled(false);
             ui->m_pMsgSendPB->setStyleSheet("QPushButton{ color: rgba(255, 255, 255, 130); border-radius: 10px; background-color: rgba(0, 153, 255,0.5);}");
@@ -34,11 +34,24 @@ Friend::Friend(QWidget *parent) :
                                           "QPushButton:pressed{border-radius: 10px;background-color: rgba(0, 153, 255, 1);}");
         }
     });
+    ui->m_pInputMsgTE->installEventFilter(this);
 }
 
 Friend::~Friend()
 {
     delete ui;
+}
+
+bool Friend::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == ui->m_pInputMsgTE && event->type() == QEvent::KeyPress) {
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+            if (ui->m_pMsgSendPB->isEnabled()) ui->m_pMsgSendPB->clicked();
+            return true;
+        }
+    }
+    return QWidget::eventFilter(obj, event);
 }
 
 void Friend::updateFriendList(PDU *pdu)

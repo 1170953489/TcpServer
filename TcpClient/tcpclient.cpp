@@ -112,6 +112,12 @@ TcpClient::TcpClient(QWidget *parent) :
         }
     });
 
+    connect(ui->name_le, &QLineEdit::returnPressed, [=]() {
+        if (ui->login_pb->isEnabled()) ui->login_pb->clicked();
+    });
+    connect(ui->pwd_le, &QLineEdit::returnPressed, [=]() {
+        if (ui->login_pb->isEnabled()) ui->login_pb->clicked();
+    });
 }
 
 TcpClient::~TcpClient()

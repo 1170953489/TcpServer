@@ -172,7 +172,7 @@ background-color: rgba(255, 255, 255, 0.7);
       <property name="font">
        <font>
         <family>Consolas</family>
-        <pointsize>12</pointsize>
+        <pointsize>14</pointsize>
        </font>
       </property>
       <property name="styleSheet">

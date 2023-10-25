@@ -58,7 +58,6 @@ void FileTcpServer::uploadCancel(int number)
         {
             qDebug() << "找到文件编号 " << number;
             m_fileSocketList.at(i)->uploadCancel();
-            deleteSocket(m_fileSocketList.at(i));
             break;
         }
     }
@@ -71,12 +70,12 @@ void FileTcpServer::downloadCancel(int number)
         if (number == m_fileSocketList.at(i)->getNumber())
         {
             m_fileSocketList.at(i)->isStop = true;
+            usleep(1000);
             m_fileSocketList.at(i)->workFinished();
             break;
         }
     }
 }
-
 
 
 void FileTcpServer::on_ThreadFinished()
@@ -91,10 +90,9 @@ void FileTcpServer::deleteSocket(FileTcpSocket *socket)
     {
         if (socket == *iter)
         {
-            delete (*iter);
+            (*iter)->deleteLater();
             *iter = nullptr;
             m_fileSocketList.erase(iter);
-            qDebug() << "FileTcpSocket已移除list";
             return;
         }
     }

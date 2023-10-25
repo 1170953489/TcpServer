@@ -12,7 +12,7 @@ FileTcpSocket::~FileTcpSocket()
     if (nullptr != socket)
     {
         socket->close();
-        delete socket;
+        socket->deleteLater();
     }
     emit closeThread();
     qDebug() << "FileTcpSocket销毁";
@@ -30,10 +30,10 @@ QString FileTcpSocket::getUsrName()
 
 void FileTcpSocket::uploadCancel()
 {
-    socket->close();
-    usleep(1000);
-    m_file.remove();
     m_file.close();
+    m_file.remove();
+
+    emit workFinished();
 }
 
 void FileTcpSocket::init(qintptr socketDescriptor)
@@ -95,7 +95,8 @@ void FileTcpSocket::recvMsg()
                 respdu = nullptr;
                 free(pdu);
                 pdu = nullptr;
-                socket->close();
+
+                socket->waitForBytesWritten();
                 emit workFinished();
                 return;
             }
@@ -128,7 +129,6 @@ void FileTcpSocket::recvMsg()
                     respdu = nullptr;
 
                     socket->waitForBytesWritten();
-                    socket->close();
                     emit workFinished();
                     break;
                 }
@@ -146,7 +146,6 @@ void FileTcpSocket::recvMsg()
                     respdu = nullptr;
 
                     socket->waitForBytesWritten();
-                    socket->close();
                     emit workFinished();
                     break;
                 }
@@ -171,6 +170,7 @@ void FileTcpSocket::recvMsg()
                 free(respdu);
                 respdu = nullptr;
 
+                socket->waitForBytesWritten();
                 emit workFinished();
                 return;
             }
@@ -195,8 +195,11 @@ void FileTcpSocket::recvMsg()
                 if (ret > 0 && ret <= 1024000)
                 {
                     if (ret < 1024000) m_pdu->uiMsgLen = ret;
-                    socket->write((char*)m_pdu, m_pdu->uiPDULen);
-                    socket->waitForBytesWritten();
+                    if (socket->state() == QAbstractSocket::ConnectedState)
+                    {
+                        socket->write((char*)m_pdu, m_pdu->uiPDULen);
+                        socket->waitForBytesWritten();
+                    }
                 }else break;
             }
 
@@ -231,6 +234,5 @@ void FileTcpSocket::recvMsg()
 void FileTcpSocket::clientOffline()
 {
     m_file.close();
-    socket->close();
     emit deleteSocket(this);
 }

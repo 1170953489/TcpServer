@@ -359,8 +359,10 @@ void Document::on_m_pDownloadPB_clicked()
         free(pdu);
         pdu = nullptr;
 
+        usleep(1000);
+        if (pFileThread->getfileTransfer()->isStop == 0)
+            pFileThread->getfileTransfer()->isStop = -1;
         pFileThread->getfileTransfer()->downloadCancel();
-        pFileThread->getfileTransfer()->workFinished();
         TcpClient::getInstance()->removeFileWindow(w->getNumber());
     });
     // 关联下载成功后的关闭信号

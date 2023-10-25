@@ -33,7 +33,7 @@ void FileTransfer::uploadFile()
     m_file.setFileName(m_curFilePath);
     if (!m_file.open(QIODevice::ReadOnly)) return;
 
-    PDU *pdu = mkPDU(1024000);
+    PDU *pdu = mkPDU(2000000);
     pdu->uiMsgType = ENUM_MSG_TYPE_SEND_FILE;
     uint ret = 0;
     qint64 total = 0;
@@ -41,16 +41,18 @@ void FileTransfer::uploadFile()
     {
         if (isStop) //中途停止
         {
+
+
             qDebug() << "中途停止上传";
             this->close();
             break;
         }
-        ret = m_file.read((char*)(pdu->caMsg), 1024000);
-        if (ret > 0 && ret <= 1024000) //循环上传部分
+        ret = m_file.read((char*)(pdu->caMsg), 2000000);
+        if (ret > 0 && ret <= 2000000) //循环上传部分
         {
-            if (ret < 1024000) pdu->uiMsgLen = ret;
+            if (ret < 2000000) pdu->uiMsgLen = ret;
             write((char*)pdu, pdu->uiPDULen);
-            qDebug() << (total+=ret) << bytesToWrite();
+            qDebug() << (total = total+ret+76) << bytesToWrite();
             waitForBytesWritten();
         }
         else //结束上传
@@ -69,10 +71,9 @@ void FileTransfer::uploadFile()
 
 void FileTransfer::downloadCancel()
 {
-    close();
-    usleep(1000);
     m_file.close();
     m_file.remove();
+    emit workFinished();
 }
 
 // 接收消息
@@ -116,6 +117,7 @@ void FileTransfer::recvMsg()
             // 写入下载的文件
         case ENUM_MSG_TYPE_SEND_FILE:
         {
+            if (isStop == -1) break;
             if (!m_file.isOpen())
             {
                 m_file.setFileName(m_curFilePath);

@@ -12,7 +12,7 @@ PrivateChat::PrivateChat(QWidget *parent) :
     ui->sendMsg_pb->setEnabled(false);
     ui->sendMsg_pb->setStyleSheet("QPushButton{ color: rgba(255, 255, 255, 130); border-radius: 10px; background-color: rgba(0, 153, 255,0.5);}");
 
-    QObject::connect(ui->inputMsg_te, &QTextEdit::textChanged, [=]() {
+    connect(ui->inputMsg_te, &QTextEdit::textChanged, [=]() {
         if (ui->inputMsg_te->toPlainText().isEmpty()) {
             ui->sendMsg_pb->setEnabled(false);
             ui->sendMsg_pb->setStyleSheet("QPushButton{ color: rgba(255, 255, 255, 130); border-radius: 10px; background-color: rgba(0, 153, 255,0.5);}");
@@ -24,6 +24,8 @@ PrivateChat::PrivateChat(QWidget *parent) :
         }
     });
 
+    ui->inputMsg_te->installEventFilter(this);
+
 }
 
 PrivateChat::~PrivateChat()
@@ -31,6 +33,18 @@ PrivateChat::~PrivateChat()
     delete ui;
 
     qDebug() << "PrivateChat 销毁";
+}
+
+bool PrivateChat::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == ui->inputMsg_te && event->type() == QEvent::KeyPress) {
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+            if (ui->sendMsg_pb->isEnabled()) ui->sendMsg_pb->clicked();
+            return true;
+        }
+    }
+    return QWidget::eventFilter(obj, event);
 }
 
 void PrivateChat::setChatName(QString strChatName)

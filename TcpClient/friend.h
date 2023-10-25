@@ -28,6 +28,8 @@ public:
     QString m_strSearchName;
     QList<PrivateChat*> m_privateChatList;
 
+protected:
+    bool eventFilter(QObject* obj, QEvent* event) override;
 signals:
 
 public slots:

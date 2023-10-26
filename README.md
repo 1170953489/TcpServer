@@ -8,3 +8,4 @@
 - FileTcpServer监听9999端口处理用户文件操作逻辑，一个文件操作请求对应FileTcpServer下的一个子线程。
 ### 客户端TcpClient
 - 一个客户端对应一个主线程，文件操作在独立的子线程里处理。
+![1](https://github.com/1170953489/TcpServer/assets/91270044/2488d126-bddb-4ce7-a858-5be7597e37d7)

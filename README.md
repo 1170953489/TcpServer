@@ -11,3 +11,5 @@
   ![1](https://github.com/1170953489/TcpServer/assets/91270044/2488d126-bddb-4ce7-a858-5be7597e37d7)
 
 - ### 其他
+
+  in bug_01
